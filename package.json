@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "axios": "^0.26.1",
+    "react": "^17.0.2",
+    "react-scripts": "^4.0.3"
+  },
+  "name": "aksara-jawa-classification-master",
+  "description": "Aksara Jawa classification is intended to be used to teach people how to write Javanese language. It is a machine learning approach in classifying drawn symbols using a CNN model. We used a dataset from [Kaggle](https://www.kaggle.com/phiard/aksara-jawa).",
+  "version": "1.0.0",
+  "main": "./frontend/src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

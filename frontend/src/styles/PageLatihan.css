@@ -1,0 +1,71 @@
+.img-latihan{
+    width: 170%;
+}
+
+.Latihan{
+    margin-left: 300px;
+    margin-top: 20px;
+	height: 100%;
+	width: 70%;
+	margin-right: auto;
+	position: relative;
+	padding: 0px 30px 30px 50px;
+	background-color: #f5f5f5;
+	border-radius: 50px;
+}
+
+.text-latihan{
+    font-family: "Poppins", sans-serif;
+    color: #613c33;
+    line-height: 1.5;
+    font-size: 20px;
+    font-weight: 400;
+}
+
+.btn-latihan{
+    margin-top: 40px;
+	background-color: #613c33;
+	color: #fff;
+	padding: 0.75rem 3rem;
+	text-decoration: none;
+	transition: all 0.5s;
+	border: none;
+	font-family: "Poppins", sans-serif;
+    float: right;
+	display: block;
+	margin-right: 1rem;
+	margin-left: auto;
+    width: 20%;
+}
+
+.btn-latihan-back{
+	margin-top: 40px;
+	background-color: white;
+	color: black;
+	border-color: #613c33;
+	padding: 0.75rem 3rem;
+	text-decoration: none;
+	transition: all 0.5s;
+	border: 3px solid #613c33;
+	font-family: "Poppins", sans-serif;
+    float: left;
+	display: block;
+    width: 20%;
+}
+
+.btn-latihan:hover{
+    background-color: #360917;
+	color: #fff;
+	padding: 0.75rem 3rem;
+	text-decoration: none;
+	transition: all 0.5s;
+}
+
+.btn-latihan-back:hover{
+	background-color: #360917;
+	color: #fff;
+	padding: 0.75rem 3rem;
+	text-decoration: none;
+	transition: all 0.5s;
+	border: 3px solid #360917;
+}
