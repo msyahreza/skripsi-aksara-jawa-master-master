@@ -2,7 +2,7 @@
 /** @format */
 // eslint-disable-next-line
 import React, { Component }  from 'react';
-import logo from "../SR-Logo 1.png";
+import logo from "../SR-Logo.png";
 import Home from "../Pages/Home";
 import About from "../Pages/About";
 import Latihan1 from "../Pages/PageLatihan/Latihan1";

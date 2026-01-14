@@ -1,17 +1,9 @@
-# @format
-
-version: "2"
-
 services:
-  frontend:
-    image: "raid/aksara-jawa-frontend:latest"
-    build: ./frontend
-    depends_on:
-      - backend
+  app:
+    image: raid/aksara-monolith:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.monolith
     ports:
-      - 8080:80
-  backend:
-    image: "raid/aksara-jawa-backend:latest"
-    build: ./Backend
-    ports:
-      - 14022:14022
+      - "8080:14022"
+    restart: always

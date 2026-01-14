@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend
+  name: aksara-app
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: backend
+      app: aksara-app
   template:
     metadata:
       labels:
-        app: backend
+        app: aksara-app
     spec:
       containers:
-      - name: backend
-        image: raid/aksara-jawa-backend:latest
+      - name: aksara-app
+        image: raid/aksara-monolith:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 14022
@@ -29,11 +29,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: backend
+  name: aksara-app
 spec:
   selector:
-    app: backend
+    app: aksara-app
   ports:
     - protocol: TCP
-      port: 14022
+      port: 80
       targetPort: 14022
+      nodePort: 30080
+  type: NodePort
