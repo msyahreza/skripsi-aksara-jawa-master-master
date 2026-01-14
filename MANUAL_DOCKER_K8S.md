@@ -1,123 +1,120 @@
-# Operational Manual: Docker & Kubernetes for Aksara Jawa
+# Operational Manual: Docker & Kubernetes for Aksara Jawa (Monolith Version)
 
-This document explains the concepts, procedures, and commands for running your Aksara Jawa application using Docker and Kubernetes.
+This document explains the concepts, procedures, and commands for running your merged Aksara Jawa application (Frontend + Backend in one image).
 
 ---
 
 ## 1. Basic Knowledge: "What am I looking at?"
 
 ### **What is Docker?**
+
 Think of your application as a **house**.
-- **Without Docker:** You have to build the house on your computer's land. You need to install specific foundations (Python, Node.js) directly on your OS. If you move the house to another computer, you might find the soil is different (different OS version), and the house breaks.
-- **With Docker:** You put your house inside a **shipping container**. The container includes the soil, the foundation, and the house. You can put this container on *any* ship (computer with Docker installed), and it will look and work exactly the same.
+
+- **With Docker:** You put your house inside a **shipping container**. The container includes the foundation (Python), the walls (AI Model), and the windows (React Frontend). You can put this container on _any_ ship (computer with Docker installed), and it works perfectly.
 
 ### **What is Kubernetes (K8s)?**
-If Docker is the **shipping container**, Kubernetes is the **Port Authority**.
-- You use Kubernetes when you have *many* containers to manage.
-- It automatically handles:
-  - **Scaling:** "We have too many visitors, add 5 more copies of the Frontend container."
-  - **Self-Healing:** "The Backend container just crashed. I will immediately start a new fresh one."
-  - **Traffic Routing:** "Direct user traffic to the healthy containers only."
 
-### **Where is Kubernetes?**
-Kubernetes is software.
-- **In Development:** It runs on your laptop (via Docker Desktop or Minikube). It simulates a cluster of computers.
-- **In Production:** It runs on a fleet of servers in a cloud provider (like Google Cloud GKE, AWS EKS, or DigitalOcean).
+If Docker is the **shipping container**, Kubernetes is the **Port Authority**.
+
+- It manages your containers. If you want 3 copies of your app running, Kubernetes makes sure 3 copies are always alive. If one crashes, it immediately starts a new one.
 
 ---
 
-## 2. Docker Procedure (Current Setup)
+## 2. Fast Track: Using Helper Scripts
 
-Your current setup uses **Docker Compose**. This is a tool specifically designed to run multi-container applications (Frontend + Backend) on a single machine.
+I have created two scripts to make your life easier.
 
-### **How to Run**
+- **Start Everything:**
+
+  ```powershell
+  ./start-all.ps1
+  ```
+
+  _(Starts Docker Compose on :8080 and Kubernetes on :30080)_
+
+- **Stop Everything:**
+  ```powershell
+  ./stop-all.ps1
+  ```
+
+---
+
+## 3. Docker Compose Procedure
+
+Docker Compose is used for local development and running the app simply on one machine.
+
+### **How to Run Manually**
+
 1. **Start the App:**
    ```bash
    docker-compose up -d --build
    ```
-   - `-d`: Detached mode (runs in background).
-   - `--build`: Forces a rebuild of the images if you changed code.
-
-2. **Check Logs (Debugging):**
+2. **Check Logs:**
    ```bash
-   # View all logs
-   docker-compose logs -f
-
-   # View specific container logs
-   docker-compose logs -f backend
-   docker-compose logs -f frontend
+   docker-compose logs -f app
+   ```
+3. **Scale (Replicas):**
+   ```bash
+   docker-compose up -d --scale app=3
    ```
 
-3. **Stop the App:**
-   ```bash
-   docker-compose down
-   ```
-
-4. **Accessing the App:**
-   - **Local:** `http://localhost:8080`
-   - **LAN (Network):** `http://<YOUR_LAN_IP>:8080` (e.g., `192.168.1.15:8080`)
+**Access:** `http://localhost:8080`
 
 ---
 
-## 3. Kubernetes Procedure (The "Next Step")
+## 4. Kubernetes Procedure
 
-If you want to move from Docker Compose to Kubernetes, follow these steps.
+Use this if you want to test "Production-grade" scaling and self-healing.
 
-### **Prerequisites**
-1. **Enable Kubernetes:** Open Docker Desktop Dashboard -> Settings -> Kubernetes -> Check "Enable Kubernetes". Click "Apply & Restart".
-2. **Install CLI:** Ensure `kubectl` is installed (Docker Desktop usually handles this).
+### **Step 1: Build the Image**
 
-### **Step 1: Build Images**
-Kubernetes needs the images to exist before it can use them.
+Kubernetes needs the image to be ready in your Docker Desktop library.
+
 ```bash
-docker build -t aksara-backend:latest ./Backend
-docker build -t aksara-frontend:latest ./frontend
+docker build -f Dockerfile.monolith -t raid/aksara-monolith:latest .
 ```
 
-### **Step 2: Deploy to Cluster**
-We use the configuration files located in the `k8s/` folder.
+### **Step 2: Deploy**
 
 ```bash
-# 1. Apply the Backend configuration
-kubectl apply -f k8s/backend.yaml
-
-# 2. Apply the Frontend configuration
-kubectl apply -f k8s/frontend.yaml
+kubectl apply -f k8s/monolith.yaml
 ```
 
 ### **Step 3: Check Status**
-See if your "Pods" (running containers) are ready.
+
 ```bash
 kubectl get pods
+# You should see 3 pods starting with 'aksara-app-'
 ```
-*Wait until STATUS is `Running`.*
 
-### **Step 4: Accessing in Kubernetes**
-The frontend service is configured as a `NodePort`.
+### **Step 4: Update/Restart**
 
-1. **Get the Service Info:**
-   ```bash
-   kubectl get services
-   ```
-2. **Find the Port:** Look for `frontend`. Under `PORT(S)`, you will see something like `80:30080/TCP`.
-3. **Open Browser:** Go to `http://localhost:30080`.
+If you changed the code and rebuilt the image, tell Kubernetes to refresh:
 
-### **Step 5: Cleaning Up**
-To remove the application from Kubernetes:
 ```bash
-kubectl delete -f k8s/frontend.yaml
-kubectl delete -f k8s/backend.yaml
+kubectl rollout restart deployment aksara-app
 ```
+
+**Access:** `http://localhost:30080`
 
 ---
 
-## 4. Cheat Sheet: Docker vs Kubernetes
+## 5. Cheat Sheet: Monolith Architecture
 
-| Feature | Docker Compose | Kubernetes |
-| :--- | :--- | :--- |
-| **Complexity** | Low (Easy) | High (Steep learning curve) |
-| **Best For** | Local Dev, Single Server | Production, Multi-Server, High Traffic |
-| **Definition File** | `docker-compose.yml` | `.yaml` files in `k8s/` directory |
-| **Scaling** | Manual (`docker-compose up --scale`) | Automatic (Horizontal Pod Autoscaler) |
-| **Restarting** | `restart: always` policy | Native self-healing |
+| Feature            | Description                                                         |
+| :----------------- | :------------------------------------------------------------------ |
+| **Image Name**     | `raid/aksara-monolith:latest`                                       |
+| **Compose Port**   | `8080`                                                              |
+| **K8s Port**       | `30080` (NodePort)                                                  |
+| **Replicas**       | Configured to **3** by default in `k8s/monolith.yaml`               |
+| **Liveness Check** | Kubernetes automatically checks `http://localhost:14022/` every 10s |
 
+---
+
+## 6. Accessing from another PC
+
+1. Find your IP (Run `ipconfig` in CMD).
+2. Look for **IPv4 Address** (e.g., `192.168.1.15`).
+3. Other users can visit:
+   - `http://192.168.1.15:8080` (Compose)
+   - `http://192.168.1.15:30080` (Kubernetes)
